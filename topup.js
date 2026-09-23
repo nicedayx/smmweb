@@ -5,6 +5,7 @@ if (root) start(root);
 async function start(root) {
   const el = id => root.querySelector(`#topup-${id}`);
   const api = root.dataset.api?.replace(/\/$/, '');
+  const authMode = root.dataset.authMode || 'signed_token';
   let username, intent, timer, storageKey, busy = false, stopped = false;
   let token, tokenAt = 0;
   let requestKey, requestAmount;
@@ -12,17 +13,32 @@ async function start(root) {
   const money = amount => Number(amount).toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const readSaved = () => { try { return JSON.parse(sessionStorage.getItem(storageKey) || '{}'); } catch { return {}; } };
   const save = value => { try { sessionStorage.setItem(storageKey, JSON.stringify(value)); } catch { /* May be disabled by browser. */ } };
+  function usernameFromPanel() {
+    const primary = document.querySelector('.totals-block__card-left h2.totals-block__count-value.style-text-primary');
+    const candidates = primary ? [primary] : [...document.querySelectorAll('h2.totals-block__count-value.style-text-primary')];
+    const names = candidates.map(node => node.textContent.trim()).filter(name => /^[0-9a-zA-Z_@.\-]{1,100}$/.test(name));
+    return names.length === 1 ? names[0] : null;
+  }
   async function call(path, options = {}) {
-    if (!token || Date.now() - tokenAt > 240000) {
-      if (typeof window.SMMTopupGetToken !== 'function') throw new Error('ยังไม่ได้เชื่อมระบบยืนยันผู้ใช้ กรุณาติดต่อแอดมิน');
-      token = await window.SMMTopupGetToken(); tokenAt = Date.now();
-      if (typeof token !== 'string' || !token) throw new Error('กรุณาเข้าสู่ระบบใหม่');
+    const headers = { ...options.headers };
+    if (authMode === 'dom_username') {
+      if (!username) throw new Error('ไม่พบชื่อผู้ใช้จากหน้า panel');
+      headers['X-Panel-Username'] = username;
+    } else if (authMode === 'signed_token') {
+      if (!token || Date.now() - tokenAt > 240000) {
+        if (typeof window.SMMTopupGetToken !== 'function') throw new Error('ยังไม่ได้เชื่อมระบบยืนยันผู้ใช้ กรุณาติดต่อแอดมิน');
+        token = await window.SMMTopupGetToken(); tokenAt = Date.now();
+        if (typeof token !== 'string' || !token) throw new Error('กรุณาเข้าสู่ระบบใหม่');
+      }
+      headers.Authorization = `Bearer ${token}`;
+    } else {
+      throw new Error('ตั้งค่าโหมดผู้ใช้ไม่ถูกต้อง');
     }
     const response = await fetch(`${api}${path}`, { ...options, signal: AbortSignal.timeout(25000),
-      headers: { ...options.headers, Authorization: `Bearer ${token}` } });
+      headers });
     const data = await response.json();
     if (!response.ok) {
-      if (response.status === 401) token = null;
+      if (response.status === 401 && authMode === 'signed_token') token = null;
       const error = new Error(data.message || 'ระบบไม่พร้อม กรุณาตรวจสถานะรายการเดิม');
       error.status = response.status; throw error;
     }
@@ -114,10 +130,11 @@ async function start(root) {
   window.addEventListener('pageshow', () => { stopped = false; if (intent) refresh(); });
   try {
     if (!api?.startsWith('https://') || api.includes('YOUR-WORKER')) throw new Error('ยังไม่ได้ตั้งค่า URL ระบบเติมเงิน');
+    const panelUsername = usernameFromPanel();
+    if (!panelUsername) throw new Error('ไม่พบชื่อผู้ใช้จากการ์ดบัญชีบนหน้า panel');
+    username = panelUsername;
     const me = await call('/api/me');
-    const names = [...document.querySelectorAll('h2.totals-block__count-value.style-text-primary')]
-      .map(node => node.textContent.trim()).filter(name => /^[0-9a-zA-Z_@.\-]{1,100}$/.test(name));
-    if (!names.includes(me.username)) throw new Error('ชื่อผู้ใช้บนหน้าเว็บไม่ตรงกับบัญชีที่ยืนยัน กรุณาเข้าสู่ระบบใหม่');
+    if (me.username !== username) throw new Error('ชื่อผู้ใช้บนหน้าเว็บไม่ตรงกับบัญชีที่ยืนยัน กรุณาเข้าสู่ระบบใหม่');
     username = me.username; storageKey = `smm-topup:${api}:${username}`;
     el('username').textContent = username; el('amount').disabled = false; el('generate').disabled = false;
     const saved = readSaved();
