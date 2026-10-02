@@ -1,0 +1,821 @@
+<style>
+
+/* =====================================================
+   SMMSUPER
+   Telegram Channel Feed
+   ===================================================== */
+
+#smmsuper-telegram-feed {
+
+    width: 100%;
+
+    margin: 0 0 26px;
+
+    padding: 0 0 22px;
+
+    border-bottom:
+        1px solid rgba(0, 0, 0, .07);
+
+    font-family: inherit;
+
+    box-sizing: border-box;
+
+}
+
+
+#smmsuper-telegram-feed * {
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   SECTION HEADER
+   ===================================================== */
+
+#smmsuper-telegram-feed .stf-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 14px;
+
+    margin-bottom: 11px;
+
+}
+
+
+#smmsuper-telegram-feed .stf-channel {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+
+}
+
+
+/* Telegram Icon */
+
+#smmsuper-telegram-feed .stf-icon {
+
+    width: 36px;
+
+    height: 36px;
+
+    min-width: 36px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #229ED9;
+
+    color: #fff;
+
+}
+
+
+#smmsuper-telegram-feed .stf-icon svg {
+
+    width: 18px;
+
+    height: 18px;
+
+    display: block;
+
+}
+
+
+/* Channel information */
+
+#smmsuper-telegram-feed .stf-info {
+
+    min-width: 0;
+
+}
+
+
+#smmsuper-telegram-feed .stf-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    margin: 0;
+
+    color: #222;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    line-height: 1.35;
+
+}
+
+
+/* Green online dot */
+
+#smmsuper-telegram-feed .stf-status {
+
+    display: inline-block;
+
+    width: 7px;
+
+    height: 7px;
+
+    min-width: 7px;
+
+    border-radius: 50%;
+
+    background: #31c96b;
+
+    box-shadow:
+        0 0 0 3px rgba(49, 201, 107, .11);
+
+}
+
+
+#smmsuper-telegram-feed .stf-user {
+
+    margin-top: 2px;
+
+    color: #929292;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+
+}
+
+
+/* =====================================================
+   JOIN BUTTON
+   ===================================================== */
+
+#smmsuper-telegram-feed .stf-join {
+
+    flex: 0 0 auto;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    min-height: 34px;
+
+    padding: 7px 12px;
+
+    border: 0;
+
+    border-radius: 7px;
+
+    background: #229ED9;
+
+    color: #fff !important;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    text-decoration: none !important;
+
+    transition:
+        background .18s ease,
+        transform .18s ease,
+        opacity .18s ease;
+
+}
+
+
+#smmsuper-telegram-feed .stf-join:hover {
+
+    background: #188dca;
+
+    color: #fff !important;
+
+    text-decoration: none !important;
+
+}
+
+
+#smmsuper-telegram-feed .stf-join:active {
+
+    transform: scale(.97);
+
+}
+
+
+#smmsuper-telegram-feed .stf-join svg {
+
+    width: 14px;
+
+    height: 14px;
+
+    display: block;
+
+}
+
+
+/* =====================================================
+   IFRAME
+   ===================================================== */
+
+#smmsuper-telegram-feed .stf-frame-wrap {
+
+    position: relative;
+
+    width: 100%;
+
+    height: clamp(
+        480px,
+        56vh,
+        650px
+    );
+
+    min-height: 480px;
+
+    overflow: hidden;
+
+    /*
+     * ไม่มี Border
+     * ไม่มี Card ซ้อน
+     */
+
+    border: 0;
+
+    border-radius: 0;
+
+    box-shadow: none;
+
+    background: transparent;
+
+}
+
+
+#smmsuper-telegram-feed .stf-frame {
+
+    display: block;
+
+    width: 100%;
+
+    height: 100%;
+
+    margin: 0;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transition:
+        opacity .35s ease,
+        visibility .35s ease;
+
+}
+
+
+/* iframe loaded */
+
+#smmsuper-telegram-feed.stf-loaded
+.stf-frame {
+
+    opacity: 1;
+
+    visibility: visible;
+
+}
+
+
+/* =====================================================
+   LOADER
+   ===================================================== */
+
+#smmsuper-telegram-feed .stf-loader {
+
+    position: absolute;
+
+    z-index: 3;
+
+    inset: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    padding: 14px 3px;
+
+    background: #f5f7f8;
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transition:
+        opacity .3s ease,
+        visibility .3s ease;
+
+}
+
+
+/* เมื่อ Telegram โหลดเสร็จ */
+
+#smmsuper-telegram-feed.stf-loaded
+.stf-loader {
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+}
+
+
+/* =====================================================
+   LOADER HEADER
+   ===================================================== */
+
+#smmsuper-telegram-feed .stf-loader-head {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 16px;
+
+}
+
+
+#smmsuper-telegram-feed .stf-loader-logo {
+
+    width: 34px;
+
+    height: 34px;
+
+    min-width: 34px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e4f3fa;
+
+    color: #229ED9;
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-loader-logo svg {
+
+    width: 17px;
+
+    height: 17px;
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-loading-text {
+
+    color: #747b80;
+
+    font-size: 12px;
+
+    line-height: 1.4;
+
+}
+
+
+/* =====================================================
+   SKELETON
+   ===================================================== */
+
+#smmsuper-telegram-feed
+.stf-skeleton {
+
+    width: 100%;
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-skeleton-post {
+
+    padding: 15px 6px 17px;
+
+    border-bottom:
+        1px solid rgba(0, 0, 0, .045);
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-sk-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 13px;
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-sk-avatar {
+
+    width: 38px;
+
+    height: 38px;
+
+    min-width: 38px;
+
+    border-radius: 50%;
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-sk-user {
+
+    width: 130px;
+
+    height: 11px;
+
+    border-radius: 6px;
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-sk-line {
+
+    height: 10px;
+
+    margin-top: 9px;
+
+    border-radius: 5px;
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-sk-line.line-1 {
+
+    width: 92%;
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-sk-line.line-2 {
+
+    width: 76%;
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-sk-line.line-3 {
+
+    width: 57%;
+
+}
+
+
+/* Skeleton color */
+
+#smmsuper-telegram-feed
+.stf-sk-avatar,
+
+#smmsuper-telegram-feed
+.stf-sk-user,
+
+#smmsuper-telegram-feed
+.stf-sk-line {
+
+    position: relative;
+
+    overflow: hidden;
+
+    background: #e8ebed;
+
+}
+
+
+/* Shimmer */
+
+#smmsuper-telegram-feed
+.stf-sk-avatar::after,
+
+#smmsuper-telegram-feed
+.stf-sk-user::after,
+
+#smmsuper-telegram-feed
+.stf-sk-line::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    bottom: 0;
+
+    left: -90%;
+
+    width: 65%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.75),
+            transparent
+        );
+
+    animation:
+        stf-shimmer 1.35s infinite;
+
+}
+
+
+@keyframes stf-shimmer {
+
+    100% {
+
+        left: 130%;
+
+    }
+
+}
+
+
+/* =====================================================
+   RETRY
+   ===================================================== */
+
+#smmsuper-telegram-feed .stf-retry {
+
+    display: none;
+
+    align-self: center;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    margin-top: 18px;
+
+    padding: 7px 13px;
+
+    border:
+        1px solid rgba(0,0,0,.10);
+
+    border-radius: 7px;
+
+    background: #fff;
+
+    color: #555;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+
+#smmsuper-telegram-feed.stf-slow
+.stf-retry {
+
+    display: inline-flex;
+
+}
+
+
+#smmsuper-telegram-feed
+.stf-retry:hover {
+
+    background: #f7f7f7;
+
+}
+
+
+/* =====================================================
+   TABLET
+   ===================================================== */
+
+@media (max-width: 991px) {
+
+    #smmsuper-telegram-feed {
+
+        margin-bottom: 22px;
+
+        padding-bottom: 19px;
+
+    }
+
+
+    #smmsuper-telegram-feed
+    .stf-frame-wrap {
+
+        height: 520px;
+
+        min-height: 520px;
+
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 575px) {
+
+    #smmsuper-telegram-feed {
+
+        margin-bottom: 18px;
+
+        padding-bottom: 16px;
+
+    }
+
+
+    #smmsuper-telegram-feed
+    .stf-header {
+
+        gap: 8px;
+
+        margin-bottom: 9px;
+
+    }
+
+
+    #smmsuper-telegram-feed
+    .stf-icon {
+
+        width: 32px;
+
+        height: 32px;
+
+        min-width: 32px;
+
+    }
+
+
+    #smmsuper-telegram-feed
+    .stf-icon svg {
+
+        width: 16px;
+
+        height: 16px;
+
+    }
+
+
+    #smmsuper-telegram-feed
+    .stf-title {
+
+        font-size: 13px;
+
+    }
+
+
+    #smmsuper-telegram-feed
+    .stf-user {
+
+        font-size: 10.5px;
+
+    }
+
+
+    /*
+     * มือถือปุ่มเหลือเฉพาะ icon
+     */
+
+    #smmsuper-telegram-feed
+    .stf-join {
+
+        width: 32px;
+
+        height: 32px;
+
+        min-height: 32px;
+
+        padding: 0;
+
+    }
+
+
+    #smmsuper-telegram-feed
+    .stf-join-text {
+
+        display: none;
+
+    }
+
+
+    /*
+     * ลดความสูงเพื่อไม่ให้ iframe
+     * กินหน้าจอมือถือมากเกินไป
+     */
+
+    #smmsuper-telegram-feed
+    .stf-frame-wrap {
+
+        height: 430px;
+
+        min-height: 360px;
+
+        max-height: 58vh;
+
+    }
+
+
+    #smmsuper-telegram-feed
+    .stf-loader {
+
+        padding-top: 11px;
+
+    }
+
+
+    #smmsuper-telegram-feed
+    .stf-skeleton-post {
+
+        padding:
+            13px 2px 15px;
+
+    }
+
+}
+
+
+/* =====================================================
+   VERY SMALL MOBILE
+   ===================================================== */
+
+@media (max-width: 380px) {
+
+    #smmsuper-telegram-feed
+    .stf-frame-wrap {
+
+        height: 390px;
+
+        max-height: 56vh;
+
+    }
+
+
+    #smmsuper-telegram-feed
+    .stf-title {
+
+        font-size: 12.5px;
+
+    }
+
+}
+
+</style>
